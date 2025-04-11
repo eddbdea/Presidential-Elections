@@ -11,11 +11,30 @@ const pool = new Pool( {
     password: process.env.PG_PASSWORD
 })
 
-async function createTable() {
+export async function createTable() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS registered_users (
-            username PRIMARY KEY VARCHAR[20],
-            password VARCHAR[20]
+            username TEXT PRIMARY KEY,
+            password TEXT
         )
     `)
+    console.log('table created');
+}
+
+export async function newUser(username, password) {
+    await pool.query(`
+        INSERT INTO registered_users(username, password) VALUES ($1, $2)
+        `, [username, password]
+    )
+    //console.log(password);
+}
+
+export async function searchUser(username) {
+    const user = await pool.query('SELECT * FROM registered_users WHERE username = $1', [username]);
+    return user.rows[0].password;
+}
+
+export async function validUser(username) {
+    const user = await pool.query('SELECT * FROM registered_users WHERE username = $1', [username]);
+    return user.rows.length > 0;
 }
