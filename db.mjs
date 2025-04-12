@@ -26,7 +26,6 @@ export async function newUser(username, password) {
         INSERT INTO registered_users(username, password) VALUES ($1, $2)
         `, [username, password]
     )
-    //console.log(password);
 }
 
 export async function searchUser(username) {
