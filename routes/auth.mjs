@@ -6,22 +6,20 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get('/GET/register', (req, res) => {
+router.get('/user/register', (req, res) => {
     res.render('./register/register-form');
 })
 
-router.get('/GET/login', (req, res) => {
+router.get('/user/login', (req, res) => {
     res.render('./login/login-form');
 })
 
 //saving password into db
-router.post('/POST/register', async (req, res) => {
+router.post('/user/register/form', async (req, res) => {
     const { username, password } = req.body;
-    console.log(password);
     try {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        //console.log('Hashed pass: ', hashedPassword);
         await newUser(username, hashedPassword);
         res.status(201).render('./register/valid-register');
     } catch (err) {
@@ -31,7 +29,7 @@ router.post('/POST/register', async (req, res) => {
 })
 
 //checking if current user exists to login
-router.post('/POST/login', async (req, res) => {
+router.post('/user/login/form', async (req, res) => {
     const { username, password } = req.body;
     try {
         if (!(await validUser(username))) {
@@ -40,7 +38,7 @@ router.post('/POST/login', async (req, res) => {
             const userPassword = await searchUser(username);
             const passwordMatch = await bcrypt.compare(password, userPassword);
             if (passwordMatch) {
-             res.render('./login/valid-login');
+             res.render('./login/valid-login', {name: username});
             } else {
                 res.status(404).render('./login/invalid-login');
             }

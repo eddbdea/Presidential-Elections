@@ -14,8 +14,10 @@ const pool = new Pool( {
 export async function createTable() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS registered_users (
+            id SERIAL,
             username TEXT PRIMARY KEY,
-            password TEXT
+            password TEXT,
+            profile_description TEXT
         )
     `)
     console.log('table created');

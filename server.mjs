@@ -12,6 +12,7 @@ app.get('/', (req, res) => {
     createTable();
 })
 
+//auth route register/login
 app.use('/auth', router);
 
 app.listen(port, () => {
