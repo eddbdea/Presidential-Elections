@@ -6,13 +6,36 @@
   </head>
   <body>
     <div class="container-fluid" id="main-div">
-      <div class="container-sm" id="secondary-div">
+      <div class="container-sm">
         <h1 id="project-title">Welcome <%= name %> </h1>
-        <h3>
-          <%= name %>`s description:
-        </h3>
+        <div class="container-fluid" style="align-content: start;">
+          <h3>Profile description: <small class="text-body-secondary" id="user-description"><%= description %></small></h3>
+          <div class="mb-5"></div>
+          <form id="sendText">
+            <label for="add-description" class="form-label">Add a profile description</label>
+            <textarea class="form-control" id="add-description" rows="3" style="width: 50rem;" ></textarea>
+            <div class="mt-2"></div>
+            <button type="button" class="btn btn-success" style="width: 8rem;" id="save-text" onclick="saveText()">Save</button>
+        </form>
+        </div>
       </div>
     </div>
   <script src="/stylesheets/bootstrap.min.js"></script>
+  <script>
+  async function saveText() {
+    const textarea = document.getElementById('add-description');
+    const descriptionValue = textarea.value;
+    const description = document.getElementById('user-description');
+    description.innerText = descriptionValue;
+    const username = '<%=name%>';
+    await fetch('/save/description', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', 
+      },
+      body: JSON.stringify({ username, descriptionValue }), 
+    });
+  }
+  </script>
   </body>
 </html>

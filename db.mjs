@@ -17,7 +17,7 @@ export async function createTable() {
             id SERIAL,
             username TEXT PRIMARY KEY,
             password TEXT,
-            profile_description TEXT
+            profile_description TEXT DEFAULT 'Here is your description' NOT NULL
         )
     `)
     console.log('table created');
@@ -39,3 +39,16 @@ export async function validUser(username) {
     const user = await pool.query('SELECT * FROM registered_users WHERE username = $1', [username]);
     return user.rows.length > 0;
 }
+
+export async function updateDescription(username, description) {
+    await pool.query('UPDATE registered_users SET profile_description = $2 WHERE username = $1'
+        , [username, description]);
+    console.log(username, description);
+}
+
+export async function getDescription(username) {
+    const description = await pool.query ('SELECT * FROM registered_users WHERE username = $1', [username]);
+    return description.rows[0].profile_description;
+}
+
+
