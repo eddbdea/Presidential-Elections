@@ -38,6 +38,7 @@
           </div>
           <% } %>
           <div id="table">
+            <h2>List of candidates:</h2>
             <ul class="list-group list-group-horizontal">
               <li class="list-group-item" id="row-size">CANDIDATE NAME</li>
               <li class="list-group-item" id="row-size">VOTES</li>
@@ -78,7 +79,7 @@
     showTable.style.display = 'block';
     list.innerHTML = candidatesList;
   }
-  
+
   //show candidates list if the user doesnt participate
   async function showList() {
     const candidateMessage = document.getElementById('candidate-text');
