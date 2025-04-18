@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTable, updateDescription } from './db.mjs';
+import { createTable, updateDescription, updateCandidate, candidatesList } from './db.mjs';
 import router from './routes/user.mjs';
 import bodyParser from 'body-parser';
 const app = express();
@@ -19,9 +19,21 @@ app.get('/', (req, res) => {
 app.use('/auth', router);
 
 //live change user profile description
-app.post('/save/description', async (req, res) => {
+app.put('/save/description', async (req, res) => {
     const { username, descriptionValue } = req.body;
     await updateDescription(username, descriptionValue);
+})
+
+app.put('/user/participate', async (req, res) => {
+    const { username } = req.body;
+    await updateCandidate(username);
+    const newList = await candidatesList();
+    res.render('./user/candidate-list', { userlist: newList })
+})
+
+app.get('/user/candidates', async (req, res) => {
+    const newList = await candidatesList();
+    res.render('./user/candidate-list', { userlist: newList })
 })
 
 app.listen(port, () => {

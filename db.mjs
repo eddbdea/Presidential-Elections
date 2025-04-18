@@ -17,10 +17,11 @@ export async function createTable() {
             id SERIAL,
             username TEXT PRIMARY KEY,
             password TEXT,
-            profile_description TEXT DEFAULT 'Here is your description' NOT NULL
+            profile_description TEXT DEFAULT 'Here is your description' NOT NULL,
+            is_candidate INTEGER DEFAULT 0 NOT NULL,
+            no_votes INTEGER DEFAULT 0 NOT NULL
         )
     `)
-    console.log('table created');
 }
 
 export async function newUser(username, password) {
@@ -51,4 +52,17 @@ export async function getDescription(username) {
     return description.rows[0].profile_description;
 }
 
+export async function isCandidate(username) {
+    const validCandidate = await pool.query('SELECT * FROM registered_users WHERE username = $1', [username]);
+    return validCandidate.rows[0].is_candidate;
+}
+
+export async function candidatesList() {
+    const validCandidates = await pool.query('SELECT * FROM registered_users WHERE is_candidate = 1');
+    return validCandidates.rows;
+}
+
+export async function updateCandidate(username) {
+    const candidate = pool.query('UPDATE registered_users SET is_candidate = 1 WHERE username = $1', [username]);
+}
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
-import { getDescription, newUser, searchUser, validUser } from '../db.mjs';
+import { getDescription, newUser, searchUser, validUser, isCandidate, candidatesList } from '../db.mjs';
 const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -31,7 +31,9 @@ router.post('/user/register', async (req, res) => {
 //checking if current user exists to login
 router.post('/user/login', async (req, res) => {
     const { username, password } = req.body;
+    const validCandidate = await isCandidate(username);
     const userDescription = await getDescription(username);
+    const list = await candidatesList();
     try {
         if (!(await validUser(username))) {
             res.status(404).render('./login/invalid-login');
@@ -39,7 +41,7 @@ router.post('/user/login', async (req, res) => {
             const userPassword = await searchUser(username);
             const passwordMatch = await bcrypt.compare(password, userPassword);
             if (passwordMatch) {
-             res.render('./login/valid-login', {name: username, description: userDescription});
+             res.render('./login/valid-login', {name: username, description: userDescription, candidateValue: validCandidate, userlist: list});
             } else {
                 res.status(404).render('./login/invalid-login');
             }
