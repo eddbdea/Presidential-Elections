@@ -15,7 +15,7 @@ router.get('/user/login', (req, res) => {
 })
 
 //saving password into db
-router.post('/user/register/form', async (req, res) => {
+router.post('/user/register', async (req, res) => {
     const { username, password } = req.body;
     try {
         const saltRounds = 10;
@@ -29,7 +29,7 @@ router.post('/user/register/form', async (req, res) => {
 })
 
 //checking if current user exists to login
-router.post('/user/login/form', async (req, res) => {
+router.post('/user/login', async (req, res) => {
     const { username, password } = req.body;
     const userDescription = await getDescription(username);
     try {
