@@ -1,6 +1,6 @@
 import express from 'express';
-import { createTable, updateDescription, updateCandidate, candidatesList, getDescription } from './db.mjs';
-import router from './routes/user.mjs';
+import { createTable, updateDescription, updateCandidate, candidatesList, getDescription } from './db.js';
+import router from './routes/user.js';
 import bodyParser from 'body-parser';
 const app = express();
 const port = 3000;

@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
-import { getDescription, newUser, searchUser, validUser, isCandidate, candidatesList } from '../db.mjs';
+import { getDescription, newUser, searchUser, validUser, isCandidate, candidatesList } from '../db.js';
 const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: true }));
