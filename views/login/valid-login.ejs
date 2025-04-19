@@ -91,6 +91,10 @@
     showTable.style.display = 'block';
     list.innerHTML = candidatesList;
   }
+
+  async function updateList() {
+    await fetch('/user/candidates');
+  }
   </script>
   </body>
 </html>

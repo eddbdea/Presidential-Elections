@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTable, updateDescription, updateCandidate, candidatesList } from './db.mjs';
+import { createTable, updateDescription, updateCandidate, candidatesList, getDescription } from './db.mjs';
 import router from './routes/user.mjs';
 import bodyParser from 'body-parser';
 const app = express();
@@ -34,6 +34,12 @@ app.put('/user/participate', async (req, res) => {
 app.get('/user/candidates', async (req, res) => {
     const newList = await candidatesList();
     res.render('./user/candidate-list', { userlist: newList })
+})
+
+app.get('/user/profile/:username', async (req, res) => {
+    const username = req.params.username;
+    const profileDescription = await getDescription(username);
+    res.render('./user/user-profile', { name: username, description: profileDescription});
 })
 
 app.listen(port, () => {
