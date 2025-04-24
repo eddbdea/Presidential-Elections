@@ -20,7 +20,7 @@
             <button type="button" class="btn btn-success" style="width: 8rem;" id="save-text" onclick="saveText()">Save</button>
           </form>
           <div class="mb-5"></div>
-          <% if(candidateValue === 0) { %>
+          <% if(candidateValue === -1) { %>
           <div id="candidate-text">
             <h2>Do you want to run as candidate in the presidential elections?</h2>
             <h3><small class="text-body-secondary">(Note: This decision is final and cannot be changed later)</small></h3>
@@ -31,17 +31,19 @@
             <h2>List of candidates:</h2>
             <div class="mb-3"></div>
             <ul class="list-group list-group-horizontal">
-              <li class="list-group-item" id="row-size">CANDIDATE NAME</li>
-              <li class="list-group-item" id="row-size">VOTES</li>
+              <li class="list-group-item row-size">CANDIDATE NAME</li>
+              <li class="list-group-item row-size">NO. VOTES</li>
+              <li class="list-group-item row-size">VOTE</li>
             </ul>
-            <%- include('../user/candidate-list'); %>
+            <%- include('../user/candidate-list') %>
           </div>
           <% } %>
           <div id="table">
             <h2>List of candidates:</h2>
             <ul class="list-group list-group-horizontal">
-              <li class="list-group-item" id="row-size">CANDIDATE NAME</li>
-              <li class="list-group-item" id="row-size">VOTES</li>
+              <li class="list-group-item row-size">CANDIDATE NAME</li>
+              <li class="list-group-item row-size">NO. VOTES</li>
+              <li class="list-group-item row-size">VOTE</li>
             </ul>
           </div>
           <div id="candidate-list"></div>
@@ -50,12 +52,14 @@
     </div>
   <script src="/stylesheets/bootstrap.min.js"></script>
   <script>
+  //sends data to the server to save the new profile description
   async function saveText() {
     const textarea = document.getElementById('add-description');
     const descriptionValue = textarea.value;
     const description = document.getElementById('user-description');
     description.innerText = descriptionValue;
     const username = '<%=name%>';
+    await location.reload();
     await fetch('/save/description', {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
@@ -63,14 +67,14 @@
     });
   }
 
-  //show candidates list if the user wants to participate
+  //sends data to the server to show candidates list if the user wants to participate
   async function userParticipates() {
     const candidateMessage = document.getElementById('candidate-text');
     const list = document.getElementById('candidate-list');
     const showTable = document.getElementById('table');
     candidateMessage.style.display = 'none';
     const username = '<%=name%>';
-    const response = await fetch('/user/participate', {
+    const response = await fetch('/user/candidate', {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ username })
@@ -78,22 +82,36 @@
     const candidatesList = await response.text();
     showTable.style.display = 'block';
     list.innerHTML = candidatesList;
+    location.reload();
   }
 
-  //show candidates list if the user doesnt participate
+  //sends data to the server to show candidates list if the user doesnt participate
   async function showList() {
     const candidateMessage = document.getElementById('candidate-text');
     const list = document.getElementById('candidate-list');
     const showTable = document.getElementById('table');
     candidateMessage.style.display = 'none';
-    const response = await fetch('/user/candidates');
+    const username = '<%=name%>';
+    const response = await fetch('/user/not-candidate', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username })
+    });
     const candidatesList = await response.text();
     showTable.style.display = 'block';
     list.innerHTML = candidatesList;
+    location.reload();
   }
 
-  async function updateList() {
-    await fetch('/user/candidates');
+  //sends data to the server to update the number of votes
+  async function updateVotes(userId) {
+    const username = '<%=name%>';
+    await fetch('/user/update-votes', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username, userId })
+    });
+    location.reload();
   }
   </script>
   </body>

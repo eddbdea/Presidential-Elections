@@ -25,8 +25,9 @@ a {
   max-width: 25rem;
 }
 
-#row-size {
+.row-size {
   width: 12rem;
+  text-align: center;
 }
 
 #candidates-text {

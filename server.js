@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTable, updateDescription, updateCandidate, candidatesList, getDescription } from './db.js';
+import { createTable, updateDescription, updateValidCandidate, candidatesList, getDescription, updateInvalidCandidate, didVote, updateNoVotes, canVote } from './db.js';
 import router from './routes/user.js';
 import bodyParser from 'body-parser';
 const app = express();
@@ -24,18 +24,34 @@ app.put('/save/description', async (req, res) => {
     await updateDescription(username, descriptionValue);
 })
 
-app.put('/user/participate', async (req, res) => {
+//user participates on the election as a candidate
+app.put('/user/candidate', async (req, res) => {
     const { username } = req.body;
-    await updateCandidate(username);
+    await updateValidCandidate(username);
     const newList = await candidatesList();
     res.render('./user/candidate-list', { userlist: newList })
 })
 
-app.get('/user/candidates', async (req, res) => {
+//user doeesnt participate as a candidate
+app.put('/user/not-candidate', async (req, res) => {
+    const { username } = req.body;
+    await updateInvalidCandidate(username);
     const newList = await candidatesList();
     res.render('./user/candidate-list', { userlist: newList })
 })
 
+//update number of votes and make the user to not be able to vote anymore
+app.put('/user/update-votes', async (req, res) => {
+    const { username, userId } = req.body;
+    if (await canVote(username) === false) {
+        await updateNoVotes(userId);
+        await didVote(username);
+    }
+    const newList = await candidatesList();
+    res.render('./user/candidate-list', { userlist: newList });
+})
+
+//render candidate profile
 app.get('/user/profile/:username', async (req, res) => {
     const username = req.params.username;
     const profileDescription = await getDescription(username);

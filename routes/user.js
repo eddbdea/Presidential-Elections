@@ -31,13 +31,13 @@ router.post('/user/register', async (req, res) => {
 //checking if current user exists to login
 router.post('/user/login', async (req, res) => {
     const { username, password } = req.body;
-    const validCandidate = await isCandidate(username);
-    const userDescription = await getDescription(username);
-    const list = await candidatesList();
     try {
         if (!(await validUser(username))) {
             res.status(404).render('./login/invalid-login');
         } else {
+            const validCandidate = await isCandidate(username);
+            const userDescription = await getDescription(username);
+            const list = await candidatesList();
             const userPassword = await searchUser(username);
             const passwordMatch = await bcrypt.compare(password, userPassword);
             if (passwordMatch) {
