@@ -10,8 +10,9 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json()); 
 
-app.get('/', (req, res) => {
-    res.render('homepage');
+app.get('/', async (req, res) => {
+    const newList = await candidatesList();
+    res.render('homepage', {userlist: newList});
     createTable();
 })
 

@@ -1,7 +1,6 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  padding-right: 100rem;
 }
 
 a {
@@ -27,6 +26,11 @@ a {
 
 .row-size {
   width: 12rem;
+  text-align: center;
+}
+
+.row-vdh {
+  width: 100dvh;
   text-align: center;
 }
 

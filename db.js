@@ -47,9 +47,7 @@ export async function validUser(username) {
 
 //updates the description of a certain user
 export async function updateDescription(username, description) {
-    await pool.query('UPDATE registered_users SET profile_description = $2 WHERE username = $1'
-        , [username, description]);
-    console.log(username, description);
+    await pool.query('UPDATE registered_users SET profile_description = $2 WHERE username = $1', [username, description]);
 }
 
 //gets the profile description of a certain user
@@ -66,7 +64,7 @@ export async function isCandidate(username) {
 
 //returns the entire candidates list
 export async function candidatesList() {
-    const validCandidates = await pool.query('SELECT * FROM registered_users WHERE is_candidate = 1');
+    const validCandidates = await pool.query('SELECT * FROM registered_users WHERE is_candidate = 1 ORDER BY no_votes DESC');
     return validCandidates.rows;
 }
 
