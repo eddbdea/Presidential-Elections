@@ -1,28 +1,48 @@
 import express from 'express';
-import { createTable, updateDescription, updateValidCandidate, candidatesList, getDescription, updateInvalidCandidate, didVote, updateNoVotes, canVote } from './db.js';
+import { 
+    createUserTable, 
+    updateDescription, 
+    updateValidCandidate, 
+    candidatesList, 
+    getDescription, 
+    updateInvalidCandidate, 
+    didVote, 
+    updateNoVotes, 
+    canVote,
+    newVotingRound
+} from './db.js';
 import router from './routes/user.js';
 import bodyParser from 'body-parser';
 const app = express();
 const port = 3000;
 
-router.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json()); 
 
 app.get('/', async (req, res) => {
+    await createUserTable();
     const newList = await candidatesList();
     res.render('homepage', {userlist: newList});
-    createTable();
 })
 
 //auth route register/login
 app.use('/auth', router);
 
+//insert start date and end date into DB
+app.post('/user/admin/rounds-table', async (req, res) => {
+    const { start_date, end_date } = req.body;
+    await newVotingRound(start_date, end_date);
+    console.log('start date:', start_date,  'end date:', end_date);
+    res.status(200);
+})
+
 //live change user profile description
 app.put('/save/description', async (req, res) => {
     const { username, descriptionValue } = req.body;
     await updateDescription(username, descriptionValue);
+    res.status(200);
 })
 
 //user participates on the election as a candidate

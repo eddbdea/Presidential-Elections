@@ -15,6 +15,7 @@
               or if you already have one, you can login 
             <a href="/auth/user/login"><small class="text-body-secondary">here</small></a>.
           </h3>
+          <% if (userlist.length > 2) { %>
           <div class="mb-5"></div>
           <h2>The top 3 candidates live, now:</h2>
             <div class="mb-3"></div>
@@ -22,13 +23,14 @@
               <li class="list-group-item row-vdh">CANDIDATE NAME</li>
               <li class="list-group-item row-vdh">NO. VOTES</li>
             </ul>
-          <% for(let i = 0 ; i <= 2; ++i) { %>
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item row-vdh">
-                    <a href="/user/profile/<%=userlist[i].username%>"><%= userlist[i].username %></a>
-                </li>
-                <li class="list-group-item row-vdh"><%= userlist[i].no_votes %></li>
-            </ul>      
+            <% for(let i = 0 ; i <= 2; ++i) { %>
+              <ul class="list-group list-group-horizontal">
+                  <li class="list-group-item row-vdh">
+                      <a href="/user/profile/<%=userlist[i].username%>"><%= userlist[i].username %></a>
+                  </li>
+                  <li class="list-group-item row-vdh"><%= userlist[i].no_votes %></li>
+              </ul>      
+            <% } %>
           <% } %>
       </div>
     </div>

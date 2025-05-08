@@ -1,7 +1,17 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
-import { getDescription, newUser, searchUser, validUser, isCandidate, candidatesList } from '../db.js';
+import { 
+    getDescription, 
+    newUser, 
+    searchUser, 
+    validUser, 
+    isCandidate, 
+    candidatesList, 
+    getRole,
+    createVotingRoundsTable,
+    newVotingRound 
+} from '../db.js';
 const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -41,7 +51,13 @@ router.post('/user/login', async (req, res) => {
             const userPassword = await searchUser(username);
             const passwordMatch = await bcrypt.compare(password, userPassword);
             if (passwordMatch) {
-             res.render('./login/valid-login', {name: username, description: userDescription, candidateValue: validCandidate, userlist: list});
+                if (await getRole(username) === 'admin') {
+                    await createVotingRoundsTable();
+                    res.render('./user/admin-panel');
+                } else {
+                    res.render('./login/valid-login', 
+                    {name: username, description: userDescription, candidateValue: validCandidate, userlist: list});
+                }
             } else {
                 res.status(404).render('./login/invalid-login');
             }
