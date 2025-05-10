@@ -15,7 +15,7 @@ const pool = new Pool( {
 export async function createUserTable() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS registered_users (
-            id SERIAL,
+            id SERIAL UNIQUE,
             username TEXT PRIMARY KEY,
             password TEXT,
             profile_description TEXT DEFAULT 'Here is your description' NOT NULL,
@@ -38,6 +38,24 @@ export async function createVotingRoundsTable() {
         )
     `)
     console.log('Table voting_rounds created successfully')
+}
+
+//create intermediate table to manage history of past rounds
+export async function createHistoryVotingRoundsTable() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS past_voting_rounds (
+            round_no INTEGER REFERENCES voting_rounds(round_no),
+            candidate_id INTEGER REFERENCES registered_users(id),
+            no_votes INTEGER DEFAULT 0 NOT NULL,
+            PRIMARY KEY(round_no, candidate_id)
+        )
+    `)
+}
+
+//checks if the inserted period overlaps with an existing round of voting
+export async function overlapsDate(startDate, endDate) {
+    const res = await pool.query('SELECT * FROM voting_rounds WHERE (start_date, end_date) OVERLAPS ($1, $2)', [startDate, endDate]);
+    return res.rows.length > 0;
 }
 
 //creates a new user

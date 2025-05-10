@@ -6,33 +6,42 @@
   </head>
   <body>
     <div class="container-fluid" id="main-div">
-        <div class="container-sm">
-            <h1 id="project-title">Admin panel</h1>
-            <div class="container-fluid" style="align-content: start;">
-                <div class="mb-3">
-                    <form >
-                        <label for="startDate" class="form-label">Select starting date</label>
-                        <input type="date" class="form-control" id="startDate" min="2025-05-08" name="start_date">
-                        <div class="mt-2"></div>
-                        <label for="endDate" class="form-label">Select ending date</label>
-                        <input type="date" class="form-control" id="endDate" min="2025-05-10" name="end_date">
-                        <div class="mt-3"></div>
-                        <button type="button" class="btn btn-primary mb-3" onclick="getEndDate()">Confirm</button>
-                    </form>
-                </div>
-            </div>
+      <div class="container-sm">
+        <h1 id="project-title">Admin panel</h1>
+        <h3 style="text-align: center;">Make sure to choose a date that doesn`t interfere with an existing round!</h3>
+        <div class="mb-5"></div>
+        <div class="container-fluid" style="align-content: start;">
+          <div class="mb-3">
+            <form action="/auth/user/admin/round-date" method="POST">
+              <% 
+                const date = new Date();
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                let minDate = "";
+                if (month < 10) {
+                  minDate = `${year}-0${month}`;
+                } else {
+                  minDate = `${year}-${month}`;
+                }
+                if (day < 10) {
+                  minDate += `-0${day}`;
+                } else {
+                  minDate += `-${day}`;
+                }
+              %>
+              <label for="startDate" class="form-label">Select starting date</label>
+              <input type="date" class="form-control" id="startDate" min="<%= minDate %>" name="startingDate">
+              <div class="mt-2"></div>
+              <label for="endDate" class="form-label">Select ending date (this should be bigger then starting date)</label>
+              <input type="date" class="form-control" id="endDate" name="endingDate">
+              <div class="mt-3"></div>
+              <button type="submit" class="btn btn-primary mb-3">Confirm</button>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-  <script src="/stylesheets/bootstrap.min.js"></script>
-  <script>
-    function getEndDate() {
-        const date = document.getElementById('startDate');
-        const d = new Date(date.value);
-        d.setDate(d.getDate() + 1);
-        console.log(d.getDate(), d.getMonth(), d.getFullYear());
-        const todayDate = new Date();
-        console.log(todayDate.getFullYear(), todayDate.getMonth());
-    }
-  </script>
+    <script src="/stylesheets/bootstrap.min.js"></script>
   </body>
 </html>

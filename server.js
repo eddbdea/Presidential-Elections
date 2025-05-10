@@ -8,8 +8,7 @@ import {
     updateInvalidCandidate, 
     didVote, 
     updateNoVotes, 
-    canVote,
-    newVotingRound
+    canVote
 } from './db.js';
 import router from './routes/user.js';
 import bodyParser from 'body-parser';
@@ -29,14 +28,6 @@ app.get('/', async (req, res) => {
 
 //auth route register/login
 app.use('/auth', router);
-
-//insert start date and end date into DB
-app.post('/user/admin/rounds-table', async (req, res) => {
-    const { start_date, end_date } = req.body;
-    await newVotingRound(start_date, end_date);
-    console.log('start date:', start_date,  'end date:', end_date);
-    res.status(200);
-})
 
 //live change user profile description
 app.put('/save/description', async (req, res) => {
