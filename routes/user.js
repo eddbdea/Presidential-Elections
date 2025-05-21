@@ -11,7 +11,6 @@ import {
     getRole,
     createVotingRoundsTable,
     newVotingRound,
-    overlapsDate
 } from '../db.js';
 const router = express.Router();
 
@@ -84,13 +83,10 @@ router.post('/user/admin/round-date', async (req, res, next) => {
         if (dateEnd < dateStart) {
             res.render('./user/invalid-date');
             console.log("End date is less then start date, invalid!")
-        } else if (!await overlapsDate(startingDate, endingDate)) {
+        } else {
             await newVotingRound(startingDate, endingDate);
             console.log("Date is valid!");
             res.render('./user/valid-date');
-        } else {
-            console.log("Date already taken");
-            res.render('./user/invalid-date');
         }
     } catch (err) {
         console.log(err);

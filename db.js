@@ -15,7 +15,7 @@ const pool = new Pool( {
 export async function createUserTable() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS registered_users (
-            id SERIAL UNIQUE,
+            id SERIAL,
             username TEXT PRIMARY KEY,
             password TEXT,
             profile_description TEXT DEFAULT 'Here is your description' NOT NULL,
@@ -33,29 +33,34 @@ export async function createVotingRoundsTable() {
         CREATE TABLE IF NOT EXISTS voting_rounds (
             round_no SERIAL PRIMARY KEY,
             start_date DATE,
-            end_date DATE,
-            UNIQUE(start_date, end_date)
+            end_date DATE
         )
     `)
     console.log('Table voting_rounds created successfully')
 }
 
-//create intermediate table to manage history of past rounds
-export async function createHistoryVotingRoundsTable() {
+//table where we hold users that candidate in a specific round
+export async function userCandidacies() {
     await pool.query(`
-        CREATE TABLE IF NOT EXISTS past_voting_rounds (
+        CREATE TABLE IF NOT EXISTS user_candidacies (
             round_no INTEGER REFERENCES voting_rounds(round_no),
-            candidate_id INTEGER REFERENCES registered_users(id),
-            no_votes INTEGER DEFAULT 0 NOT NULL,
+            candidate_id INTEGER REFERENCES registered_users(id),   
             PRIMARY KEY(round_no, candidate_id)
         )
     `)
 }
 
-//checks if the inserted period overlaps with an existing round of voting
-export async function overlapsDate(startDate, endDate) {
-    const res = await pool.query('SELECT * FROM voting_rounds WHERE (start_date, end_date) OVERLAPS ($1, $2)', [startDate, endDate]);
-    return res.rows.length > 0;
+//table where we hold each voter, who voted for
+export async function userVotes() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS user_votes (
+            round_no INTEGER REFERENCES voting_rounds(round_no),
+            voter_id INTEGER REFERENCES registered_users(id),
+            candidate_id INTEGER REFERENCES registered_users(id),
+            PRIMARY KEY (round_no, voter_id),
+            CHECK (voter_id <> candidate_id)
+        )
+    `)
 }
 
 //creates a new user
