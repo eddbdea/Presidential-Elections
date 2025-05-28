@@ -1,13 +1,1 @@
-<% userlist.forEach(user => { %>
-    <ul class="list-group list-group-horizontal">
-        <li class="list-group-item row-size">
-            <a href="/user/profile/<%=user.username%>"><%= user.username %></a>
-        </li>
-        <li class="list-group-item row-size" id="<%=user.id%>"><%= user.no_votes %></li>
-        <li class="list-group-item row-size">
-            <button type="button" class="btn btn-success" style="height: 2rem; width: 6rem;" onclick="updateVotes('<%=user.id%>')">
-                Vote
-            </button>
-        </li>
-    </ul>      
-<% }); %>
+

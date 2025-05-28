@@ -7,10 +7,10 @@ import {
     searchUser, 
     validUser, 
     isCandidate, 
-    candidatesList, 
     getRole,
     createVotingRoundsTable,
     newVotingRound,
+    votingRoundsList
 } from '../db.js';
 const router = express.Router();
 
@@ -48,16 +48,16 @@ router.post('/user/login', async (req, res, next) => {
         } else {
             const validCandidate = await isCandidate(username);
             const userDescription = await getDescription(username);
-            const list = await candidatesList();
             const userPassword = await searchUser(username);
             const passwordMatch = await bcrypt.compare(password, userPassword);
+            const rounds = await votingRoundsList();
             if (passwordMatch) {
                 if (await getRole(username) === 'admin') {
                     await createVotingRoundsTable();
                     res.redirect('/auth/user/login/admin-panel')
                 } else {
                     res.render('./login/valid-login', 
-                    {name: username, description: userDescription, candidateValue: validCandidate, userlist: list});
+                    { name: username, description: userDescription, candidateValue: validCandidate, roundsList: rounds });
                 }
             } else {
                 res.status(404).render('./login/invalid-login');
@@ -79,6 +79,7 @@ router.post('/user/admin/round-date', async (req, res, next) => {
     const {startingDate, endingDate} = req.body;
     const dateStart = new Date(startingDate).getTime();
     const dateEnd = new Date(endingDate).getTime();
+    console.log(startingDate);
     try {
         if (dateEnd < dateStart) {
             res.render('./user/invalid-date');

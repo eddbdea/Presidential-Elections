@@ -20,8 +20,6 @@ export async function createUserTable() {
             password TEXT,
             profile_description TEXT DEFAULT 'Here is your description' NOT NULL,
             is_candidate INTEGER DEFAULT -1 NOT NULL,
-            no_votes INTEGER DEFAULT 0 NOT NULL,
-            did_vote BOOLEAN DEFAULT FALSE NOT NULL,
             role TEXT DEFAULT 'user' NOT NULL
         )
     `)
@@ -79,6 +77,12 @@ export async function searchUser(username) {
     return user.rows[0].password;
 }
 
+export async function votingRoundsList() {
+    const votingRoundsList = await pool.query('SELECT * FROM voting_rounds WHERE start_date >= current_date');
+    console.log(votingRoundsList.rows);
+    return votingRoundsList.rows;
+}
+
 //checks if the user is already registered
 export async function validUser(username) {
     const user = await pool.query('SELECT username FROM registered_users WHERE username = $1', [username]);
@@ -102,12 +106,6 @@ export async function isCandidate(username) {
     return validCandidate.rows[0].is_candidate;
 }
 
-//returns the entire candidates list
-export async function candidatesList() {
-    const validCandidates = await pool.query('SELECT * FROM registered_users WHERE is_candidate = 1 ORDER BY no_votes DESC');
-    return validCandidates.rows;
-}
-
 //set user as candidate
 export async function updateValidCandidate(username) {
     await pool.query('UPDATE registered_users SET is_candidate = 1 WHERE username = $1', [username]);
@@ -116,22 +114,6 @@ export async function updateValidCandidate(username) {
 //set the user as a non-candidate
 export async function updateInvalidCandidate(username) {
     await pool.query('UPDATE registered_users SET is_candidate = 0 WHERE username = $1', [username]);
-}
-
-//check if the current user already voted
-export async function canVote(username) {
-    const response = await pool.query('SELECT did_vote FROM registered_users WHERE username = $1', [username]);
-    return response.rows[0].did_vote;
-}
-
-//updates number of votes for this candidate
-export async function updateNoVotes(userId) {
-    await pool.query('UPDATE registered_users SET no_votes = no_votes + 1 WHERE id = $1', [userId]);
-}
-
-//updates status from a user that didnt vote, to a user that did vote
-export async function didVote(username) {
-    await pool.query('UPDATE registered_users SET did_vote = TRUE WHERE username = $1', [username]);
 }
 
 //get user role

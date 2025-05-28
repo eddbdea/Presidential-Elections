@@ -2,13 +2,9 @@ import express from 'express';
 import { 
     createUserTable, 
     updateDescription, 
-    updateValidCandidate, 
-    candidatesList, 
+    updateValidCandidate,
     getDescription, 
-    updateInvalidCandidate, 
-    didVote, 
-    updateNoVotes, 
-    canVote
+    updateInvalidCandidate
 } from './db.js';
 import router from './routes/user.js';
 import bodyParser from 'body-parser';
@@ -22,8 +18,7 @@ app.use(express.json());
 
 app.get('/', async (req, res) => {
     await createUserTable();
-    const newList = await candidatesList();
-    res.render('homepage', {userlist: newList});
+    res.render('homepage');
 })
 
 //auth route register/login
@@ -36,38 +31,23 @@ app.put('/save/description', async (req, res) => {
     res.status(200);
 })
 
-//user participates on the election as a candidate
-app.put('/user/candidate', async (req, res) => {
-    const { username } = req.body;
-    await updateValidCandidate(username);
-    const newList = await candidatesList();
-    res.render('./user/candidate-list', { userlist: newList })
-})
-
-//user doeesnt participate as a candidate
-app.put('/user/not-candidate', async (req, res) => {
-    const { username } = req.body;
-    await updateInvalidCandidate(username);
-    const newList = await candidatesList();
-    res.render('./user/candidate-list', { userlist: newList })
-})
-
-//update number of votes and make the user to not be able to vote anymore
-app.put('/user/update-votes', async (req, res) => {
-    const { username, userId } = req.body;
-    if (await canVote(username) === false) {
-        await updateNoVotes(userId);
-        await didVote(username);
-    }
-    const newList = await candidatesList();
-    res.render('./user/candidate-list', { userlist: newList });
-})
-
 //render candidate profile
 app.get('/user/profile/:username', async (req, res) => {
     const username = req.params.username;
     const profileDescription = await getDescription(username);
     res.render('./user/user-profile', { name: username, description: profileDescription});
+})
+
+app.put('/user/candidate', async (req, res) => {
+    const { username } = req.body;
+    await updateValidCandidate(username);
+    res.status(200).json({message: "User marked as candidate!"});
+})
+
+app.put('/user/vote', async (req, res) => {
+    const { username } = req.body;
+    await updateInvalidCandidate(username);
+    res.status(200).json({ message: "User marked as not candidate!"});
 })
 
 app.listen(port, () => {
