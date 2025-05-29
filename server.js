@@ -4,7 +4,10 @@ import {
     updateDescription, 
     updateValidCandidate,
     getDescription, 
-    updateInvalidCandidate
+    updateInvalidCandidate,
+    getUserId,
+    candidateRounds,
+    userCandidaciesTable
 } from './db.js';
 import router from './routes/user.js';
 import bodyParser from 'body-parser';
@@ -23,6 +26,15 @@ app.get('/', async (req, res) => {
 
 //auth route register/login
 app.use('/auth', router);
+
+//get dates where candidate wants to participate and save them into the DB
+app.post('/user/candidate/success', async (req, res) => {
+    const { roundNo, username } = req.body;
+    await userCandidaciesTable();
+    const userId = await getUserId(username);
+    await candidateRounds(roundNo, userId);
+    res.status(200);
+})
 
 //live change user profile description
 app.put('/save/description', async (req, res) => {

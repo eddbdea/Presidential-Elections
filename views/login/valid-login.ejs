@@ -29,17 +29,19 @@
             <h3><a href="#" style="color: green;" onclick="userParticipates()">YES</a>/<a href="#" style="color: green;" onclick="notCandidate()">NO</a></h3>
           </div>
           <% } else if (candidateValue === 1){ %>
-            <form>
+            <form action="/user/candidate/success" method="POST">
+              <h2> Select the rounds you want to participate in!</h2>
+              <input type="hidden" name="username" value="<%= name %>">
             <% roundsList.forEach(round => { %>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="roundNo" value="<%= round.round_no %>" id="checkDefault">
                 <label class="form-check-label" for="checkDefault">
-                  Round number <%= round.round_no %>, time period: <%= new Date(round.start_date).toLocaleString() %> - <%= new Date(round.end_date).toLocaleString() %>
+                  Round number <%= round.round_no %>, time period: <%= new Date(round.start_date).toDateString() %> - <%= new Date(round.end_date).toDateString() %>
                 </label>
               </div>
             <% }) %>
               <div class="mb-3"></div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn btn-success">Submit</button>
             </form>
           <% } %>
         </div>

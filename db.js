@@ -15,7 +15,7 @@ const pool = new Pool( {
 export async function createUserTable() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS registered_users (
-            id SERIAL,
+            id SERIAL UNIQUE,
             username TEXT PRIMARY KEY,
             password TEXT,
             profile_description TEXT DEFAULT 'Here is your description' NOT NULL,
@@ -38,7 +38,7 @@ export async function createVotingRoundsTable() {
 }
 
 //table where we hold users that candidate in a specific round
-export async function userCandidacies() {
+export async function userCandidaciesTable() {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS user_candidacies (
             round_no INTEGER REFERENCES voting_rounds(round_no),
@@ -66,6 +66,14 @@ export async function newUser(username, password) {
     await pool.query('INSERT INTO registered_users(username, password) VALUES ($1, $2)', [username, password]);
 }
 
+//add candidate into the rounds he participates
+export async function candidateRounds(roundsArray, userId) {
+    for (const round of roundsArray) {
+        console.log(round);
+        await pool.query('INSERT INTO user_candidacies (round_no, candidate_id) VALUES ($1, $2)', [round, userId]);
+    }
+}
+
 //create new voting round
 export async function newVotingRound(startDate, endDate) {
     await pool.query('INSERT INTO voting_rounds(start_date, end_date) VALUES ($1, $2)', [startDate, endDate]);
@@ -79,7 +87,6 @@ export async function searchUser(username) {
 
 export async function votingRoundsList() {
     const votingRoundsList = await pool.query('SELECT * FROM voting_rounds WHERE start_date >= current_date');
-    console.log(votingRoundsList.rows);
     return votingRoundsList.rows;
 }
 
@@ -121,4 +128,11 @@ export async function getRole(username) {
     const role = await pool.query('SELECT * FROM registered_users WHERE username = $1', [username]);
     //console.log(role.rows[0].role);
     return role.rows[0].role;
+}
+
+//get user ID by username
+export async function getUserId(username) {
+    const userId = await pool.query('SELECT * FROM registered_users WHERE username = $1', [username]);
+    console.log(userId.rows[0].id);
+    return userId.rows[0].id;
 }
